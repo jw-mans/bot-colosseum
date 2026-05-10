@@ -4,7 +4,21 @@
 
 ---
 
+## Установка
+
+```cmd
+pip install -e .
+```
+
+После этого в системе появляется команда `colosseum`. Запускать нужно из папки проекта (боты и игры указываются относительными путями).
+
 ## Быстрый старт
+
+```cmd
+colosseum --game tictactoe --bot1 "python bots/random_bot.py" --bot2 "python bots/tictactoe/minimax_bot.py"
+```
+
+Без установки — напрямую через Python:
 
 ```bash
 python run_match.py \

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bot-colosseum"
+version = "0.1.0"
+requires-python = ">=3.10"
+description = "Bot battle arena for turn-based games"
+
+[project.scripts]
+colosseum = "run_match:main"
+
+[tool.setuptools]
+py-modules = ["run_match"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["colosseum*", "games*", "bots*"]
