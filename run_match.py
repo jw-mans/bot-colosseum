@@ -20,6 +20,8 @@ from colosseum.runner import MatchRunner
 
 GAME_REGISTRY = {
     "tictactoe": "games.tictactoe.game.TicTacToe",
+    "nim":       "games.nim.game.Nim",
+    "21":        "games.twentyone.game.TwentyOne",
 }
 
 

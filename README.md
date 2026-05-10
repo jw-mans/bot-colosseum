@@ -25,13 +25,25 @@ bot-colosseum/
 │   ├── runner.py        # Оркестрация матча
 │   └── persistence.py   # Сохранение истории и снапшотов
 ├── games/
-│   └── tictactoe/
-│       └── game.py      # Реализация крестиков-ноликов
+│   ├── tictactoe/       # Крестики-нолики 3×3
+│   ├── nim/             # Ним (кучки камней)
+│   └── twentyone/       # 21 (Очко)
 ├── bots/
 │   ├── random_bot.py            # Универсальный случайный бот
-│   └── tictactoe/
-│       ├── greedy_bot.py        # Жадный бот (выигрыш → блок → центр → угол)
-│       └── minimax_bot.py       # Оптимальный бот (minimax + alpha-beta)
+│   ├── tictactoe/
+│   │   ├── greedy_bot.py        # Выигрыш → блок → центр → угол
+│   │   └── minimax_bot.py       # Minimax + alpha-beta, оптимальная игра
+│   ├── nim/
+│   │   ├── optimal_bot.py       # XOR-стратегия Шпрага-Гранди
+│   │   ├── greedy_bot.py        # Максимум из наибольшей кучки
+│   │   ├── conservative_bot.py  # Всегда берёт 1
+│   │   ├── copycat_bot.py       # Повторяет ход противника
+│   │   └── endgame_bot.py       # Случайный → оптимальный в эндшпиле
+│   └── twentyone/
+│       ├── cautious_bot.py      # Хит < 17, стоп ≥ 17 (стратегия дилера)
+│       ├── aggressive_bot.py    # Всегда хит до 21 или перебора
+│       ├── probability_bot.py   # Хит если P(bust) < 40%
+│       └── counter_bot.py       # Адаптируется к состоянию противника
 ├── matches/             # Сохранённые матчи (в .gitignore)
 └── run_match.py         # CLI
 ```
@@ -91,37 +103,28 @@ class MyGame(Game):
 
     @property
     def num_players(self) -> int:
-        # Количество игроков
         return 2
 
     def initial_state(self) -> dict:
-        # Начальное состояние игры.
-        # Должно быть JSON-сериализуемым dict.
-        # Обязательное поле: "current_player" (int, 0-based).
+        # Обязательное поле: "current_player" (int, 0-based)
         return {"board": [...], "current_player": 0}
 
     def valid_moves(self, state: dict) -> list:
-        # Список допустимых ходов для текущего игрока.
-        # Каждый ход — JSON-сериализуемый dict.
+        # Каждый ход — JSON-сериализуемый dict
         return [{"row": 0, "col": 1}, ...]
 
     def apply_move(self, state: dict, move: dict) -> dict:
-        # Применить ход к состоянию, вернуть новое состояние.
         # Не мутировать входное состояние!
         ...
 
     def is_terminal(self, state: dict) -> bool:
-        # True если игра завершена.
         ...
 
     def get_result(self, state: dict) -> dict:
-        # Результат завершённой игры.
-        # Ключи — индексы игроков (int), значения — float:
-        #   1.0 = победа, 0.5 = ничья, 0.0 = поражение
+        # 1.0 = победа, 0.5 = ничья, 0.0 = поражение
         return {0: 1.0, 1: 0.0}
 
     def render(self, state: dict) -> str:
-        # Текстовое представление состояния для вывода в консоль.
         ...
 ```
 
@@ -137,7 +140,9 @@ class MyGame(Game):
 ```python
 GAME_REGISTRY = {
     "tictactoe": "games.tictactoe.game.TicTacToe",
-    "mygame":    "games.mygame.game.MyGame",       # новая игра
+    "nim":       "games.nim.game.Nim",
+    "21":        "games.twentyone.game.TwentyOne",
+    "mygame":    "games.mygame.game.MyGame",   # новая игра
 }
 ```
 
@@ -155,8 +160,8 @@ GAME_REGISTRY = {
 {
   "step": 4,
   "player": 1,
-  "state": { "board": [[1,0,2],[0,1,0],[0,0,0]], "current_player": 1 },
-  "valid_moves": [{"row": 0, "col": 1}, {"row": 1, "col": 1}, ...]
+  "state": { "current_player": 1, "...": "..." },
+  "valid_moves": [{"row": 0, "col": 1}, ...]
 }
 ```
 
@@ -177,7 +182,7 @@ GAME_REGISTRY = {
 
 ### Жизненный цикл бота
 
-Процесс бота запускается **один раз** на весь матч и остаётся живым до его конца. Это позволяет боту хранить внутреннее состояние между ходами. Бот читает запросы из stdin в цикле и отвечает на каждый.
+Процесс бота запускается **один раз** на весь матч и остаётся живым до его конца. Это позволяет боту хранить внутреннее состояние между ходами (например, история ходов противника). Бот читает запросы из stdin в цикле и отвечает на каждый.
 
 ### Минимальный бот (Python)
 
@@ -192,7 +197,6 @@ for line in sys.stdin:
 
 ### Минимальный бот (любой язык)
 
-Условия:
 - читать одну строку из stdin → парсить JSON
 - выбрать ход из `valid_moves`
 - вывести в stdout одну строку `{"move": ...}` и сбросить буфер (`flush`)
@@ -222,38 +226,39 @@ python run_match.py --game <name>
 ### Примеры
 
 ```bash
-# Случайный против жадного
+# Случайный против minimax в крестики-нолики
 python run_match.py --game tictactoe \
   --bot1 "python bots/random_bot.py" \
-  --bot2 "python bots/tictactoe/greedy_bot.py"
-
-# Жадный против оптимального
-python run_match.py --game tictactoe \
-  --bot1 "python bots/tictactoe/greedy_bot.py" \
   --bot2 "python bots/tictactoe/minimax_bot.py"
+
+# Оптимальный против жадного в ним
+python run_match.py --game nim \
+  --bot1 "python bots/nim/optimal_bot.py" \
+  --bot2 "python bots/nim/greedy_bot.py"
+
+# Вероятностный против осторожного в 21
+python run_match.py --game 21 \
+  --bot1 "python bots/twentyone/probability_bot.py" \
+  --bot2 "python bots/twentyone/cautious_bot.py"
 
 # Бот на другом языке
 python run_match.py --game tictactoe \
   --bot1 "python bots/random_bot.py" \
-  --bot2 "./my_bot"
+  --bot2 "./my_bot_binary"
 
 # Тихий режим (только результат)
-python run_match.py --game tictactoe \
-  --bot1 "python bots/random_bot.py" \
-  --bot2 "python bots/random_bot.py" \
+python run_match.py --game nim \
+  --bot1 "python bots/nim/optimal_bot.py" \
+  --bot2 "python bots/nim/greedy_bot.py" \
   --quiet
 ```
 
 ---
 
-## Доступные игры и боты
+## Доступные игры
 
-### Крестики-нолики (`tictactoe`)
-
-Классическая игра 3×3. Побеждает тот, кто первым выстроит три своих знака в ряд (по горизонтали, вертикали или диагонали).
-
-| Бот | Команда | Описание |
-|-----|---------|----------|
-| Random | `python bots/random_bot.py` | Случайный ход |
-| Greedy | `python bots/tictactoe/greedy_bot.py` | Выигрыш → блок → центр → угол |
-| Minimax | `python bots/tictactoe/minimax_bot.py` | Оптимальная игра, никогда не проигрывает |
+| Игра | Ключ | Описание | Документация |
+|------|------|----------|--------------|
+| Крестики-нолики | `tictactoe` | 3×3, три в ряд | [games/tictactoe/](games/tictactoe/README.md) |
+| Ним | `nim` | Кучки камней, берёт последний — победитель | [games/nim/](games/nim/README.md) |
+| 21 (Очко) | `21` | Набери 21 не перебрав | [games/twentyone/](games/twentyone/README.md) |
