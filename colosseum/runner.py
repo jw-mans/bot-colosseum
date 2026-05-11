@@ -12,8 +12,8 @@ from colosseum import persistence
 @dataclass
 class MatchResult:
     match_id: str
-    scores: dict                    # {player_index: float}
-    winner: Optional[int]           # None = draw
+    scores: dict # {player_index: float}
+    winner: Optional[int] # None = draw
     total_steps: int
     forfeit: bool = False
     forfeit_player: Optional[int] = None

@@ -18,7 +18,7 @@ def hand_value(cards: list) -> int:
 
 class TwentyOne(Game):
     """
-    Simplified 21 (Очко).
+    Simplified 21 (Score / Blackjack).
 
     Both players receive 2 cards at game start. Players alternate turns:
     on each turn a player may hit (draw one card) or stand (stop drawing).

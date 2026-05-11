@@ -15,10 +15,10 @@ class Bot:
     The bot process is started once and kept alive for the entire match.
     On each turn the runner sends one JSON line and expects one JSON line back.
 
-    Protocol (runner → bot):
+    Protocol (runner -> bot):
         {"step": 5, "player": 1, "state": {...}, "valid_moves": [...]}
 
-    Protocol (bot → runner):
+    Protocol (bot -> runner):
         {"move": {...}}
     """
 

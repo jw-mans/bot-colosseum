@@ -3,10 +3,10 @@
 Counter 21 bot.
 
 Adapts strategy based on the opponent's current state:
-  - Opponent busted               → stand immediately (already winning)
-  - Opponent stood and we're ahead → stand (lock in the win)
-  - Opponent stood and we're behind or tied → hit (must catch up)
-  - Opponent still playing        → cautious fallback (stand at 17+)
+  - Opponent busted                         -> stand immediately (already winning)
+  - Opponent stood and we're ahead          -> stand (lock in the win)
+  - Opponent stood and we're behind or tied -> hit (must catch up)
+  - Opponent still playing                  -> cautious fallback (stand at 17+)
 """
 import json
 import sys

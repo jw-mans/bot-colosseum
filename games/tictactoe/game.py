@@ -42,7 +42,7 @@ class TicTacToe(Game):
     def apply_move(self, state: dict, move: dict) -> dict:
         new_state = copy.deepcopy(state)
         player = new_state["current_player"]
-        mark = player + 1  # player 0 → 1 (X), player 1 → 2 (O)
+        mark = player + 1  # player 0 -> 1 (X), player 1 -> 2 (O)
         new_state["board"][move["row"]][move["col"]] = mark
         new_state["current_player"] = 1 - player
         return new_state
@@ -65,9 +65,7 @@ class TicTacToe(Game):
             rows.append(" ".join(_SYMBOLS[board[r][c]] for c in range(3)))
         return "\n".join(rows)
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     def _winner(self, state: dict) -> int | None:
         """Return the winning mark (1 or 2), or None if no winner yet."""
