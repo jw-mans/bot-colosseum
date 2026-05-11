@@ -276,3 +276,22 @@ python run_match.py --game nim \
 | Крестики-нолики | `tictactoe` | 3×3, три в ряд | [games/tictactoe/](games/tictactoe/README.md) |
 | Ним | `nim` | Кучки камней, берёт последний — победитель | [games/nim/](games/nim/README.md) |
 | 21 (Очко) | `21` | Набери 21 не перебрав | [games/twentyone/](games/twentyone/README.md) |
+
+---
+
+## Документация
+
+| Документ | Описание |
+|----------|----------|
+| [docs/creating-a-game.md](docs/creating-a-game.md) | Пошаговый гайд по добавлению новой игры с полным примером |
+| [docs/creating-a-bot.md](docs/creating-a-bot.md) | Гайд по написанию бота на Python, JS, Go и любом другом языке |
+| [games/tictactoe/README.md](games/tictactoe/README.md) | Правила, боты и результаты матчей для крестиков-ноликов |
+| [games/nim/README.md](games/nim/README.md) | Правила, XOR-стратегия, боты и результаты матчей для Нима |
+| [games/twentyone/README.md](games/twentyone/README.md) | Правила, боты и результаты матчей для 21 |
+
+---
+
+## Вклад в проект
+
+Вклад приветствуется — новые игры, боты, исправления, документация.
+Подробнее: [CONTRIBUTING.md](CONTRIBUTING.md)
