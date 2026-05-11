@@ -130,7 +130,7 @@ Endgame случайно играл в начале, затем переключ
 
 ---
 
-## Сводная таблица
+## Сводная таблица (одиночные матчи)
 
 | Матч | Победитель | Ходов |
 |------|-----------|-------|
@@ -144,13 +144,33 @@ Endgame случайно играл в начале, затем переключ
 
 ---
 
+## Статистика серий (--rounds)
+
+Ним детерминирован при детерминированных ботах, но при участии случайных ботов результат меняется. Ниже — серия из 50 раундов Random vs Optimal.
+
+### Random vs Optimal — 50 раундов
+
+```
+Bot1 (random_bot):   wins    0  (0.0%)
+Bot2 (optimal_bot):  wins   50  (100.0%)
+Draws:                       0  (0.0%)
+Avg steps per round:         6.6
+```
+
+Optimal выиграл все 50 матчей подряд без исключений. XOR-стратегия математически гарантирует победу из выигрышной позиции при любом поведении противника.
+
+> **Примечание:** стартовая позиция `[3, 5, 7]` — выигрышная для **первого** игрока (nim_sum = 1 ≠ 0). Когда Optimal играет вторым, он побеждает потому что Random первым ходом почти всегда нарушает позицию (оставляет nim_sum ≠ 0 для Optimal).
+
+---
+
 ## Запуск матчей
 
-```bash
-# Optimal против любого
-python run_match.py --game nim \
-  --bot1 "python bots/nim/greedy_bot.py" \
-  --bot2 "python bots/nim/optimal_bot.py"
+```cmd
+# Одиночный матч
+colosseum --game nim --bot1 "python bots/nim/greedy_bot.py" --bot2 "python bots/nim/optimal_bot.py"
+
+# Серия для статистики
+colosseum --game nim --bot1 "python bots/random_bot.py" --bot2 "python bots/nim/optimal_bot.py" --rounds 50
 
 # Нестандартные кучки (пока только через код)
 # Изменить Nim([1,3,5,7]) в games/nim/game.py

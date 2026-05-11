@@ -229,42 +229,34 @@ for line in sys.stdin:
 ## Параметры CLI
 
 ```
-python run_match.py --game <name>
-                    --bot1 "<command>"
-                    --bot2 "<command>"
-                    [--timeout <seconds>]   # таймаут на ход (по умолчанию 5.0)
-                    [--output <dir>]        # куда сохранять (по умолчанию matches/)
-                    [--quiet]               # не выводить ходы в консоль
+colosseum --game    <name>        # имя игры (обязательно)
+          --bot1    "<command>"   # команда запуска бота 1 (обязательно)
+          --bot2    "<command>"   # команда запуска бота 2 (обязательно)
+          --rounds  <N>           # количество раундов (по умолчанию: 1)
+          --timeout <seconds>     # таймаут на ход (по умолчанию: 5.0)
+          --output  <dir>         # куда сохранять матчи (по умолчанию: matches/)
+          --quiet                 # не выводить ходы в консоль (один раунд)
 ```
+
+При `--rounds > 1` ходы отдельных матчей не выводятся — показывается только прогресс и итоговая статистика.
 
 ### Примеры
 
-```bash
-# Случайный против minimax в крестики-нолики
-python run_match.py --game tictactoe \
-  --bot1 "python bots/random_bot.py" \
-  --bot2 "python bots/tictactoe/minimax_bot.py"
+```cmd
+# Одиночный матч
+colosseum --game tictactoe --bot1 "python bots/random_bot.py" --bot2 "python bots/tictactoe/minimax_bot.py"
 
-# Оптимальный против жадного в ним
-python run_match.py --game nim \
-  --bot1 "python bots/nim/optimal_bot.py" \
-  --bot2 "python bots/nim/greedy_bot.py"
+# Серия из 200 раундов со статистикой
+colosseum --game 21 --bot1 "python bots/twentyone/probability_bot.py" --bot2 "python bots/twentyone/cautious_bot.py" --rounds 200
 
-# Вероятностный против осторожного в 21
-python run_match.py --game 21 \
-  --bot1 "python bots/twentyone/probability_bot.py" \
-  --bot2 "python bots/twentyone/cautious_bot.py"
+# Проверка детерминированности: 50 раундов в ним
+colosseum --game nim --bot1 "python bots/random_bot.py" --bot2 "python bots/nim/optimal_bot.py" --rounds 50
 
 # Бот на другом языке
-python run_match.py --game tictactoe \
-  --bot1 "python bots/random_bot.py" \
-  --bot2 "./my_bot_binary"
+colosseum --game tictactoe --bot1 "python bots/random_bot.py" --bot2 "./my_bot_binary"
 
-# Тихий режим (только результат)
-python run_match.py --game nim \
-  --bot1 "python bots/nim/optimal_bot.py" \
-  --bot2 "python bots/nim/greedy_bot.py" \
-  --quiet
+# Тихий режим (только итог, один раунд)
+colosseum --game nim --bot1 "python bots/nim/optimal_bot.py" --bot2 "python bots/nim/greedy_bot.py" --quiet
 ```
 
 ---

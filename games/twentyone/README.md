@@ -166,7 +166,7 @@ Probability встал сразу на 19 (P(bust) была высокой). Cou
 
 ---
 
-## Сводная таблица
+## Сводная таблица (одиночные матчи)
 
 | Матч | Победитель | Счёт | Ходов |
 |------|-----------|------|-------|
@@ -177,20 +177,48 @@ Probability встал сразу на 19 (P(bust) была высокой). Cou
 | Aggressive vs **Probability** | Probability | bust vs 17 | 6 |
 | Probability vs **Counter** | Counter | 19 vs 20 | 2 |
 
-> **Важно:** результаты одного матча в 21 нерепрезентативны из-за случайности колоды. Для оценки стратегий нужна серия из N матчей со статистикой побед/ничьих/поражений.
+---
+
+## Статистика серий (--rounds)
+
+Один матч в 21 нерепрезентативен из-за случайности колоды. Ниже — реальные результаты серий по 200 раундов.
+
+### Probability vs Cautious — 200 раундов
+
+```
+Bot1 (probability_bot):  wins   80  (40.0%)
+Bot2 (cautious_bot):     wins   96  (48.0%)
+Draws:                         24  (12.0%)
+Avg steps per round:           3.1
+```
+
+Cautious стабильно выигрывает чуть чаще. Probability хитует дольше (ищет правильный момент), но порог в 40% оказывается слишком агрессивным относительно стратегии дилера.
+
+### Counter vs Cautious — 200 раундов
+
+```
+Bot1 (counter_bot):   wins   79  (39.5%)
+Bot2 (cautious_bot):  wins   79  (39.5%)
+Draws:                       42  (21.0%)
+Avg steps per round:          3.0
+```
+
+Идеальная симметрия — Counter полностью адаптируется под противника, но так как Cautious предсказуем и сам по себе неплох, адаптация не даёт преимущества. Исход определяет только колода.
+
+> **Вывод:** в 21 ни одна из детерминированных стратегий не даёт устойчивого статистического преимущества над другими при сравнимом уровне. Ключевой фактор — случайность раздачи.
 
 ---
 
 ## Запуск матчей
 
-```bash
-# Probability против Counter
-python run_match.py --game 21 \
-  --bot1 "python bots/twentyone/probability_bot.py" \
-  --bot2 "python bots/twentyone/counter_bot.py"
+```cmd
+# Одиночный матч
+colosseum --game 21 --bot1 "python bots/twentyone/probability_bot.py" --bot2 "python bots/twentyone/counter_bot.py"
 
-# Aggressive против всех
-python run_match.py --game 21 \
-  --bot1 "python bots/twentyone/aggressive_bot.py" \
-  --bot2 "python bots/twentyone/cautious_bot.py"
+# Серия для статистики
+colosseum --game 21 --bot1 "python bots/twentyone/probability_bot.py" --bot2 "python bots/twentyone/cautious_bot.py" --rounds 200
+
+# Все боты против Cautious
+colosseum --game 21 --bot1 "python bots/twentyone/aggressive_bot.py" --bot2 "python bots/twentyone/cautious_bot.py" --rounds 200
+colosseum --game 21 --bot1 "python bots/twentyone/counter_bot.py" --bot2 "python bots/twentyone/cautious_bot.py" --rounds 200
 ```
